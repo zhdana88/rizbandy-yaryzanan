@@ -1,0 +1,6 @@
+{
+  "name": "Football Fair Ranking - ریزبەندی دادپەروەرانەی تۆپی پێ",
+  "description": "سیستەمی ریزبەندی دادپەروەرانەی یاریزانانی تۆپی پێ بەپێی کارایی و ڕێژەی سەرکەوتن و خاڵبەندی پێشکەوتوو",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

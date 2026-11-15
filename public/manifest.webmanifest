@@ -1,0 +1,27 @@
+{
+  "id": "/",
+  "name": "Rizbandy Football Standings",
+  "short_name": "Rizbandy",
+  "description": "ڕێزبەندی یاریزانانی تۆپی پێ",
+  "lang": "ckb",
+  "dir": "rtl",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#f8fafc",
+  "icons": [
+    {
+      "src": "/pwa-192.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-512.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}
