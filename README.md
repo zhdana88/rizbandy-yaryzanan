@@ -23,6 +23,11 @@ bun run typecheck
 bun run build
 ```
 
+If these values are missing or still contain placeholders, the app remains
+available with browser-local data and displays a Supabase setup warning rather
+than failing during startup. Restart the Vite dev server after changing
+`.env.local`; Vite reads these values when the server starts.
+
 The Supabase URL and publishable/anon key are public browser configuration.
 Never add a service-role key, password, or other secret to a `VITE_` variable.
 The app's anonymous read access makes all data in its shared `app_state` row
