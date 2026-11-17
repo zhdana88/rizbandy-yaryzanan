@@ -1,4 +1,5 @@
 import {supabase} from './supabase';
+import {isConfiguredAdminEmail} from './adminAccess';
 
 interface AIResponse {
   text: string;
@@ -11,7 +12,7 @@ export async function askAI(prompt: string): Promise<string> {
 
   const {data, error} = await supabase.auth.getSession();
   if (error) throw error;
-  if (!data.session) {
+  if (!data.session || !isConfiguredAdminEmail(data.session.user.email)) {
     throw new Error('Sign in with the authorized admin account to use AI.');
   }
 

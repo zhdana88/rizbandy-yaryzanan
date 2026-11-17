@@ -23,6 +23,11 @@ bun run typecheck
 bun run build
 ```
 
+`VITE_SUPABASE_URL` must be the project URL (for example,
+`https://<project-ref>.supabase.co`); do not put an API key in that variable.
+Vite embeds both `VITE_` values during the build, so Vercel Production variables
+must be corrected before triggering a new production deployment.
+
 If these values are missing or still contain placeholders, the app remains
 available with browser-local data and displays a Supabase setup warning rather
 than failing during startup. Restart the Vite dev server after changing
@@ -64,24 +69,26 @@ availability, monitor both the hosting deployment and Supabase project status.
 1. Create a Supabase project under your account.
 2. In **SQL Editor**, run these migrations in timestamp order:
    [`supabase/migrations/20261029000000_app_state.sql`](./supabase/migrations/20261029000000_app_state.sql),
-   [`supabase/migrations/20261029010000_harden_app_state_writes.sql`](./supabase/migrations/20261029010000_harden_app_state_writes.sql)
+   [`supabase/migrations/20261029010000_harden_app_state_writes.sql`](./supabase/migrations/20261029010000_harden_app_state_writes.sql),
+   [`supabase/migrations/20261116000000_enforce_admin_only_app_state_writes.sql`](./supabase/migrations/20261116000000_enforce_admin_only_app_state_writes.sql),
+   [`supabase/migrations/20261116010000_restrict_app_state_to_admin_email.sql`](./supabase/migrations/20261116010000_restrict_app_state_to_admin_email.sql).
    The first creates a single shared state row table, an owner membership
-   table, RLS policies, and enables Realtime. The second explicitly revokes
-   table writes except authenticated insert/update and re-applies the allowlisted
-   policies. Public clients can only read app state.
+   table, RLS policies, and enables Realtime. The later migrations explicitly
+   revoke broad table grants and re-apply the allowlisted policies. Public
+   clients can only read app state; writes additionally require the authenticated
+   email to match `zhdana88@gmail.com`.
 3. In **Authentication → Providers → Email**, enable email magic links. Disable
    public sign-ups. Invite your own email from **Authentication → Users**; do
    not enable self-service account creation. For production delivery, configure
    a trusted SMTP provider in Supabase.
-4. After the owner account exists, add its Supabase user UUID to the private
-   admin allowlist using the SQL Editor. Replace the sample email; do not commit
-   your actual email in a public repo:
+4. After the `zhdana88@gmail.com` owner account exists, add its Supabase user
+   UUID to the private admin allowlist using the SQL Editor:
 
    ```sql
    insert into public.app_admins (user_id)
    select id
    from auth.users
-   where lower(email) = lower('you@example.com')
+   where email = 'zhdana88@gmail.com'
    on conflict (user_id) do nothing;
    ```
 
@@ -94,9 +101,10 @@ availability, monitor both the hosting deployment and Supabase project status.
    ```
 
    The allowlist stores the account UUID, and clients cannot add or change
-   memberships. Keep only your own UUID in this table for single-admin access.
-   The app checks membership before exposing admin controls and before cloud
-   writes; PostgreSQL privileges and RLS independently enforce the permission.
+   memberships. Keep only the UUID for `zhdana88@gmail.com` in this table for
+   single-admin access. The app checks the signed-in email and membership
+   before exposing admin controls and before cloud writes. PostgreSQL
+   privileges and RLS independently enforce both conditions.
 5. In **Project Settings → API**, copy the Project URL and the publishable key
    (or legacy anon key) into local `.env.local`:
 

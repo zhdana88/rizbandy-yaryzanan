@@ -113,15 +113,17 @@ export const InjuredPlayersCard: React.FC<InjuredPlayersCardProps> = ({
 
               {/* Actions */}
               <div className="flex items-center gap-1.5 shrink-0">
-                <button
-                  type="button"
-                  onClick={() => onRestorePlayer(player.id)}
-                  className="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black flex items-center gap-1 transition shadow-2xs cursor-pointer active:scale-95"
-                  title="چاکبوونەوە و گەڕاندنەوە بۆ خشتەی ڕیزبەندی"
-                >
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span>گەڕانەوە</span>
-                </button>
+                {isAdmin && (
+                  <button
+                    type="button"
+                    onClick={() => onRestorePlayer(player.id)}
+                    className="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black flex items-center gap-1 transition shadow-2xs cursor-pointer active:scale-95"
+                    title="چاکبوونەوە و گەڕاندنەوە بۆ خشتەی ڕیزبەندی"
+                  >
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    <span>گەڕانەوە</span>
+                  </button>
+                )}
 
                 {isAdmin && (
                   <button

@@ -48,6 +48,10 @@ export function getSupabaseSetupError(): string | null {
     return `Missing required deployment settings: ${missing.join(', ')}`;
   }
 
+  if (/^(?:eyJ[A-Za-z0-9_-]*|sb_(?:publishable|secret)_)/i.test(supabaseUrl)) {
+    return 'VITE_SUPABASE_URL appears to contain a token. Use the Supabase Project URL; put the anon or publishable key in VITE_SUPABASE_ANON_KEY.';
+  }
+
   try {
     const url = new URL(supabaseUrl);
     if (!['http:', 'https:'].includes(url.protocol) || !url.hostname || url.username || url.password) {

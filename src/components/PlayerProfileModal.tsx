@@ -34,7 +34,7 @@ export const PlayerProfileModal: React.FC<PlayerProfileModalProps> = ({
   player,
   allPlayers,
   config,
-  isAdmin = true,
+  isAdmin = false,
   onClose,
   onEditPlayer,
   onDeletePlayer,
@@ -369,4 +369,3 @@ export const PlayerProfileModal: React.FC<PlayerProfileModalProps> = ({
     </div>
   );
 };
-

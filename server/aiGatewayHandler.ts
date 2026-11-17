@@ -1,3 +1,5 @@
+import {isConfiguredAdminEmail} from '../src/lib/adminAccess';
+
 type Environment = Record<string, string | undefined>;
 
 const MODEL = '@cf/meta/llama-3.1-8b-instruct';
@@ -95,6 +97,10 @@ export async function handleAIGatewayRequest(
   const user: unknown = await userResponse.json().catch(() => null);
   if (!isRecord(user) || typeof user.id !== 'string') {
     return jsonResponse(401, {error: 'Unable to verify the signed-in user.'});
+  }
+
+  if (!isConfiguredAdminEmail(typeof user.email === 'string' ? user.email : null)) {
+    return jsonResponse(403, {error: 'This account is not authorized to use the AI service.'});
   }
 
   let membershipResponse: Response;

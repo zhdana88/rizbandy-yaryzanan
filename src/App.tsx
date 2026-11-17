@@ -31,6 +31,7 @@ import { INITIAL_PLAYERS } from './data/initialPlayers';
 import { rankPlayers, DEFAULT_CONFIG } from './utils/rankingCalculator';
 import { ensurePlayerAvatars } from './utils/avatarHelper';
 import type {Session} from '@supabase/supabase-js';
+import {isConfiguredAdminEmail} from './lib/adminAccess';
 import {
   fetchCloudAppState,
   getCloudStateFingerprint,
@@ -114,7 +115,13 @@ export default function App() {
   const [authMessage, setAuthMessage] = useState('');
   const [isAdminLoginOpen, setIsAdminLoginOpen] = useState(false);
   const [adminUserId, setAdminUserId] = useState<string | null>(null);
-  const isAdmin = Boolean(authReady && session && adminUserId === session.user.id);
+  const isAdmin = Boolean(
+    authReady &&
+    session &&
+    isConfiguredAdminEmail(session.user.email) &&
+    adminUserId === session.user.id,
+  );
+
   const [cloudLoading, setCloudLoading] = useState(Boolean(supabase));
   const [cloudMissing, setCloudMissing] = useState(false);
   const [cloudStatus, setCloudStatus] = useState<'setup' | 'loading' | 'empty' | 'live' | 'saving' | 'error'>(
@@ -204,8 +211,11 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (!supabase || !authReady || !session) {
+    if (!supabase || !authReady || !session || !isConfiguredAdminEmail(session.user.email)) {
       setAdminUserId(null);
+      if (session && !isConfiguredAdminEmail(session.user.email)) {
+        setAuthMessage('This signed-in account is not authorized to edit this app.');
+      }
       return;
     }
 
@@ -464,7 +474,7 @@ export default function App() {
       setAuthMessage(getSupabaseSetupError() ?? 'Complete the Supabase setup before signing in.');
       return;
     }
-    if (!email) {
+    if (!isConfiguredAdminEmail(email)) {
       setAuthMessage('Enter the email address authorized for admin access.');
       return;
     }

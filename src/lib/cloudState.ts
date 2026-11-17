@@ -1,5 +1,6 @@
 import type {SupabaseClient} from '@supabase/supabase-js';
 import type {FullAppState} from '../utils/persistentStorage';
+import {isConfiguredAdminEmail} from './adminAccess';
 import type {Database, Json} from './supabase';
 
 const APP_STATE_ID = 'default';
@@ -55,7 +56,7 @@ function toJson(value: unknown): Json {
 async function assertAdmin(client: AppSupabaseClient): Promise<void> {
   const {data: {user}, error: userError} = await client.auth.getUser();
   if (userError) throw userError;
-  if (!user) {
+  if (!user || !isConfiguredAdminEmail(user.email)) {
     throw new Error('You must be signed in as an authorized admin to modify shared app state.');
   }
 
