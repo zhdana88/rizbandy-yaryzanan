@@ -89,6 +89,19 @@ const AdminLoginModal = lazy(() => import('./components/AdminLoginModal').then((
 const FinanceDashboard = lazy(() => import('./components/FinanceDashboard').then(({FinanceDashboard}) => ({default: FinanceDashboard})));
 const LineupBuilder = lazy(() => import('./components/LineupBuilder').then(({LineupBuilder}) => ({default: LineupBuilder})));
 
+function getErrorMessage(error: unknown, fallback: string): string {
+  if (error instanceof Error) return error.message;
+  if (
+    typeof error === 'object' &&
+    error !== null &&
+    'message' in error &&
+    typeof error.message === 'string'
+  ) {
+    return error.message;
+  }
+  return fallback;
+}
+
 export default function App() {
   // Load master persisted state initially
   const initialLoadedState = useMemo(() => loadFullAppState(), []);
@@ -324,7 +337,7 @@ export default function App() {
       setCloudLoading(false);
     }).catch((error: unknown) => {
       if (active) {
-        setCloudError(error instanceof Error ? error.message : 'Unable to load public app data.');
+        setCloudError(getErrorMessage(error, 'Unable to load public app data.'));
         setCloudStatus('error');
         setCloudLoading(false);
       }

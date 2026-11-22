@@ -71,12 +71,15 @@ availability, monitor both the hosting deployment and Supabase project status.
    [`supabase/migrations/20261029000000_app_state.sql`](./supabase/migrations/20261029000000_app_state.sql),
    [`supabase/migrations/20261029010000_harden_app_state_writes.sql`](./supabase/migrations/20261029010000_harden_app_state_writes.sql),
    [`supabase/migrations/20261116000000_enforce_admin_only_app_state_writes.sql`](./supabase/migrations/20261116000000_enforce_admin_only_app_state_writes.sql),
-   [`supabase/migrations/20261116010000_restrict_app_state_to_admin_email.sql`](./supabase/migrations/20261116010000_restrict_app_state_to_admin_email.sql).
+   [`supabase/migrations/20261116010000_restrict_app_state_to_admin_email.sql`](./supabase/migrations/20261116010000_restrict_app_state_to_admin_email.sql),
+   [`supabase/migrations/20261122000000_repair_public_app_state_access.sql`](./supabase/migrations/20261122000000_repair_public_app_state_access.sql).
    The first creates a single shared state row table, an owner membership
    table, RLS policies, and enables Realtime. The later migrations explicitly
-   revoke broad table grants and re-apply the allowlisted policies. Public
-   clients can only read app state; writes additionally require the authenticated
-   email to match `zhdana88@gmail.com`.
+   revoke broad table grants and re-apply the allowlisted policies. The final
+   migration repairs missing/incomplete table columns and reinstates the
+   intended policies: public clients can read only the `default` app state;
+   writes additionally require the authenticated email to match
+   `zhdana88@gmail.com` and the account UUID to be in `app_admins`.
 3. In **Authentication → Providers → Email**, enable email magic links. Disable
    public sign-ups. Invite your own email from **Authentication → Users**; do
    not enable self-service account creation. For production delivery, configure
@@ -215,7 +218,7 @@ repository ignores `.env` and `.env.*` except `.env.example`.
 - [ ] Confirm `.env.local` and all real credentials are absent from Git; only
   the Supabase URL and public anon/publishable key belong in Vercel `VITE_`
   variables. Never add a service-role key.
-- [ ] Apply both Supabase migrations, disable public sign-ups, and verify that
+- [ ] Apply all Supabase migrations, disable public sign-ups, and verify that
   only the intended owner UUID is in `app_admins`.
 - [ ] Test as a signed-out visitor that reads work and edits are unavailable;
   test as the owner that edits persist. RLS must reject writes by other users.

@@ -22,7 +22,7 @@ function isFullAppState(value: unknown): value is FullAppState {
     isRecord(value.themeConfig) &&
     Array.isArray(value.matchHistory) &&
     Array.isArray(value.financeSessions) &&
-    (value.lineup === null || isRecord(value.lineup))
+    (value.lineup === undefined || value.lineup === null || isRecord(value.lineup))
   );
 }
 
@@ -31,7 +31,7 @@ export function parseCloudAppState(value: unknown): FullAppState {
     throw new Error('The saved cloud app state has an invalid format.');
   }
 
-  return value;
+  return {...value, lineup: value.lineup ?? null};
 }
 
 export function getCloudStateFingerprint(state: FullAppState): string {
